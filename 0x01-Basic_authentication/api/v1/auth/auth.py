@@ -1,27 +1,34 @@
 #!/usr/bin/env python3
-"""doc doc doc """
-from typing import List, TypeVar
+""" Auth class, Require auth with stars """
 from flask import request
+from typing import List, TypeVar
 
 
-class Auth:
-    """doc doc doc"""
-
+class Auth():
+    """ manage the API authentication """
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """doc doc doc"""
-        if path is None or excluded_paths is None or len(excluded_paths) == 0:
+        """ require authorithation """
+        if path is None or excluded_paths is None or not len(excluded_paths):
             return True
-        if path[-1] != "/":
-            path += "/"
-
-        return path not in excluded_paths
+        if path[-1] != '/':
+            path += '/'
+        for i in excluded_paths:
+            if i.endswith('*'):
+                if path.startswith(i[:1]):
+                    return False
+        if path in excluded_paths:
+            return False
+        else:
+            return True
 
     def authorization_header(self, request=None) -> str:
-        """doc doc doc"""
+        """ authorization header """
         if request is None:
             return None
-        return request.headers.get("Authorization", None)
+        if not request.headers.get("Authorization"):
+            return None
+        return request.headers.get("Authorization")
 
-    def current_user(self, request=None) -> TypeVar("User"):
-        """doc doc doc"""
+    def current_user(self, request=None) -> TypeVar('User'):
+        """ current user """
         return None
